@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake Game 🐍</title>
+  <style>
+    canvas {
+      background-color: #15b33f; /* Blå bakgrund */
+      display: block;
+      margin: 40px auto;
+      border: 3px solid rgb(10, 10, 10);
+    }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+    }
+    #touch-controls {
+      margin-top: 20px;
+    }
+    #touch-controls button {
+      font-size: 24px;
+      padding: 15px 20px;
+      margin: 5px;
+      border-radius: 10px;
+      background-color: #eee;
+      border: 2px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Snake Game 🐍</h1>
+  <canvas id="gameCanvas" width="600" height="500"></canvas>
+  <p>Styr med piltangenterna ⬅️ ⬆️ ➡️ ⬇️ eller använd knapparna 👇</p>
+
+  <!-- 🟦 TOUCHKONTROLLER -->
+  <div id="touch-controls">
+    <button onclick="styr('up')">⬆️</button><br>
+    <button onclick="styr('left')">⬅️</button>
+    <button onclick="styr('down')">⬇️</button>
+    <button onclick="styr('right')">➡️</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const box = 20;
+    let snake = [{ x: 200, y: 200 }];
+    let dx = 0;
+    let dy = 0;
+    let food = spawnFood();
+    let score = 0;
+
+    function spawnFood() {
+      return {
+        x: Math.floor(Math.random() * (canvas.width / box)) * box,
+        y: Math.floor(Math.random() * (canvas.height / box)) * box,
+      };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Rita ormen
+      ctx.fillStyle = "red";
+      for (let s of snake) {
+        ctx.fillRect(s.x, s.y, box, box);
+      }
+
+      // Rita mat
+      ctx.fillStyle = "black";
+      ctx.fillRect(food.x, food.y, box, box);
+
+      // Flytta ormen
+      let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+      // Krock med vägg
+      if (
+        head.x < 0 || head.y < 0 ||
+        head.x >= canvas.width || head.y >= canvas.height
+      ) return gameOver();
+
+      // Krock med sig själv
+      for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) return gameOver();
+      }
+
+      snake.unshift(head);
+
+      // Äta mat
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        food = spawnFood();
+      } else {
+        snake.pop();
+      }
+
+      // Visa poäng
+      ctx.fillStyle = "blue";
+      ctx.font = "18px sans-serif";
+      ctx.fillText("Poäng: " + score, 10, 20);
+    }
+
+    function gameOver() {
+      clearInterval(game);
+      alert("Du förlorade! Poäng: " + score);
+      location.reload();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" && dx === 0) {
+        dx = -box; dy = 0;
+      } else if (e.key === "ArrowRight" && dx === 0) {
+        dx = box; dy = 0;
+      } else if (e.key === "ArrowUp" && dy === 0) {
+        dx = 0; dy = -box;
+      } else if (e.key === "ArrowDown" && dy === 0) {
+        dx = 0; dy = box;
+      }
+    });
+
+    // 🟨 TOUCHSTYRNING
+    function styr(riktning) {
+      if (riktning === "left" && dx === 0) {
+        dx = -box; dy = 0;
+      } else if (riktning === "right" && dx === 0) {
+        dx = box; dy = 0;
+      } else if (riktning === "up" && dy === 0) {
+        dx = 0; dy = -box;
+      } else if (riktning === "down" && dy === 0) {
+        dx = 0; dy = box;
+      }
+    }
+
+    let game = setInterval(draw, 100);
+  </script>
+</body>
+</html>
