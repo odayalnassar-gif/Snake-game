@@ -13,11 +13,17 @@
       font-family: sans-serif;
       margin: 0;
       text-align: center;
-      background: #f1f5f2;
+      background: #15b33f;
     }
 
     h1 {
       margin-top: 20px;
+    }
+
+    #scoreDisplay {
+      font-size: 20px;
+      color: white;
+      margin: 10px auto;
     }
 
     canvas {
@@ -32,12 +38,12 @@
     }
 
     .touch-controls {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      grid-template-rows: repeat(2, 60px);
       gap: 10px;
+      justify-content: center;
       margin: 20px auto;
-      max-width: 300px;
     }
 
     .btn {
@@ -54,26 +60,27 @@
       font-size: 16px;
       color: #fff;
     }
-    
-    #scoreDisplay {
-      font-size: 20px;
-      color: rgb(9, 9, 9);
-      margin: 10px auto;
-}
 
+    .empty {
+      visibility: hidden;
+    }
   </style>
 </head>
 <body>
   <h1>Snake Game 🐍</h1>
   <div id="scoreDisplay">Poäng: 0</div>
   <canvas id="gameCanvas" width="600" height="500"></canvas>
+
   <div class="touch-controls">
-    <button class="btn" id="up">⬆️</button><br />
+    <div class="empty"></div>
+    <button class="btn" id="up">⬆️</button>
+    <div class="empty"></div>
     <button class="btn" id="left">⬅️</button>
     <button class="btn" id="down">⬇️</button>
     <button class="btn" id="right">➡️</button>
   </div>
-  <p>Spela med piltangenterna eller knapparna ⬅️ ⬆️ ➡️ ⬇️</p>
+
+  <p>Spela med piltangenterna eller touch-knapparna ⬅️ ⬆️ ➡️ ⬇️</p>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -115,8 +122,7 @@
         head.y < 0 ||
         head.x >= canvas.width ||
         head.y >= canvas.height
-      )
-        return gameOver();
+      ) return gameOver();
 
       // Krock med sig själv
       for (let i = 1; i < snake.length; i++) {
@@ -133,7 +139,7 @@
         snake.pop();
       }
 
-      // Visa poäng
+      // Uppdatera poäng utanför canvas
       document.getElementById("scoreDisplay").innerText = "Poäng: " + score;
     }
 
@@ -146,50 +152,31 @@
     // Tangentbordsstyrning
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" && dx === 0) {
-        dx = -box;
-        dy = 0;
+        dx = -box; dy = 0;
       } else if (e.key === "ArrowRight" && dx === 0) {
-        dx = box;
-        dy = 0;
+        dx = box; dy = 0;
       } else if (e.key === "ArrowUp" && dy === 0) {
-        dx = 0;
-        dy = -box;
+        dx = 0; dy = -box;
       } else if (e.key === "ArrowDown" && dy === 0) {
-        dx = 0;
-        dy = box;
+        dx = 0; dy = box;
       }
     });
 
     // Touchkontroller
     document.getElementById("up").addEventListener("click", () => {
-      if (dy === 0) {
-        dx = 0;
-        dy = -box;
-      }
+      if (dy === 0) { dx = 0; dy = -box; }
     });
-
     document.getElementById("down").addEventListener("click", () => {
-      if (dy === 0) {
-        dx = 0;
-        dy = box;
-      }
+      if (dy === 0) { dx = 0; dy = box; }
     });
-
     document.getElementById("left").addEventListener("click", () => {
-      if (dx === 0) {
-        dx = -box;
-        dy = 0;
-      }
+      if (dx === 0) { dx = -box; dy = 0; }
     });
-
     document.getElementById("right").addEventListener("click", () => {
-      if (dx === 0) {
-        dx = box;
-        dy = 0;
-      }
+      if (dx === 0) { dx = box; dy = 0; }
     });
 
-    let game = setInterval(draw, 100);
+    let game = setInterval(draw, 75);
   </script>
 </body>
 </html>
