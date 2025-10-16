@@ -5,41 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snake Game 🐍</title>
   <style>
-    canvas {
-      background-color: #15b33f; /* Blå bakgrund */
-      display: block;
-      margin: 40px auto;
-      border: 3px solid rgb(10, 10, 10);
+    * {
+      box-sizing: border-box;
     }
+
     body {
       font-family: sans-serif;
+      margin: 0;
       text-align: center;
+      background: #f1f5f2;
     }
-    #touch-controls {
+
+    h1 {
       margin-top: 20px;
     }
-    #touch-controls button {
-      font-size: 24px;
-      padding: 15px 20px;
-      margin: 5px;
-      border-radius: 10px;
-      background-color: #eee;
-      border: 2px solid #333;
+
+    canvas {
+      background-color: #15b33f;
+      border: 3px solid rgb(10, 10, 10);
+      display: block;
+      margin: 10px auto;
+      width: 90vw;
+      max-width: 600px;
+      height: 70vw;
+      max-height: 500px;
     }
+
+    .touch-controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 300px;
+    }
+
+    .btn {
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      border-radius: 12px;
+      border: none;
+      background-color: #000;
+      color: #fff;
+    }
+
+    p {
+      font-size: 16px;
+      color: #fff;
+    }
+    
+    #scoreDisplay {
+      font-size: 20px;
+      color: rgb(9, 9, 9);
+      margin: 10px auto;
+}
+
   </style>
 </head>
 <body>
   <h1>Snake Game 🐍</h1>
+  <div id="scoreDisplay">Poäng: 0</div>
   <canvas id="gameCanvas" width="600" height="500"></canvas>
-  <p>Styr med piltangenterna ⬅️ ⬆️ ➡️ ⬇️ eller använd knapparna 👇</p>
-
-  <!-- 🟦 TOUCHKONTROLLER -->
-  <div id="touch-controls">
-    <button onclick="styr('up')">⬆️</button><br>
-    <button onclick="styr('left')">⬅️</button>
-    <button onclick="styr('down')">⬇️</button>
-    <button onclick="styr('right')">➡️</button>
+  <div class="touch-controls">
+    <button class="btn" id="up">⬆️</button><br />
+    <button class="btn" id="left">⬅️</button>
+    <button class="btn" id="down">⬇️</button>
+    <button class="btn" id="right">➡️</button>
   </div>
+  <p>Spela med piltangenterna eller knapparna ⬅️ ⬆️ ➡️ ⬇️</p>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -77,9 +111,12 @@
 
       // Krock med vägg
       if (
-        head.x < 0 || head.y < 0 ||
-        head.x >= canvas.width || head.y >= canvas.height
-      ) return gameOver();
+        head.x < 0 ||
+        head.y < 0 ||
+        head.x >= canvas.width ||
+        head.y >= canvas.height
+      )
+        return gameOver();
 
       // Krock med sig själv
       for (let i = 1; i < snake.length; i++) {
@@ -97,9 +134,7 @@
       }
 
       // Visa poäng
-      ctx.fillStyle = "blue";
-      ctx.font = "18px sans-serif";
-      ctx.fillText("Poäng: " + score, 10, 20);
+      document.getElementById("scoreDisplay").innerText = "Poäng: " + score;
     }
 
     function gameOver() {
@@ -108,30 +143,51 @@
       location.reload();
     }
 
+    // Tangentbordsstyrning
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" && dx === 0) {
-        dx = -box; dy = 0;
+        dx = -box;
+        dy = 0;
       } else if (e.key === "ArrowRight" && dx === 0) {
-        dx = box; dy = 0;
+        dx = box;
+        dy = 0;
       } else if (e.key === "ArrowUp" && dy === 0) {
-        dx = 0; dy = -box;
+        dx = 0;
+        dy = -box;
       } else if (e.key === "ArrowDown" && dy === 0) {
-        dx = 0; dy = box;
+        dx = 0;
+        dy = box;
       }
     });
 
-    // 🟨 TOUCHSTYRNING
-    function styr(riktning) {
-      if (riktning === "left" && dx === 0) {
-        dx = -box; dy = 0;
-      } else if (riktning === "right" && dx === 0) {
-        dx = box; dy = 0;
-      } else if (riktning === "up" && dy === 0) {
-        dx = 0; dy = -box;
-      } else if (riktning === "down" && dy === 0) {
-        dx = 0; dy = box;
+    // Touchkontroller
+    document.getElementById("up").addEventListener("click", () => {
+      if (dy === 0) {
+        dx = 0;
+        dy = -box;
       }
-    }
+    });
+
+    document.getElementById("down").addEventListener("click", () => {
+      if (dy === 0) {
+        dx = 0;
+        dy = box;
+      }
+    });
+
+    document.getElementById("left").addEventListener("click", () => {
+      if (dx === 0) {
+        dx = -box;
+        dy = 0;
+      }
+    });
+
+    document.getElementById("right").addEventListener("click", () => {
+      if (dx === 0) {
+        dx = box;
+        dy = 0;
+      }
+    });
 
     let game = setInterval(draw, 100);
   </script>
